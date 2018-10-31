@@ -119,6 +119,7 @@ import org.slf4j.LoggerFactory
     */
   def bigQueryTable(tableSpec: String): DataFrame = {
     val tableRef = BigQueryStrings.parseTableReference(tableSpec)
+    Console.out.println(s" TABLE REF FOR TABLE SPEC ${tableSpec} is ${tableRef}")
     BigQueryConfiguration.configureBigQueryInput(
       hadoopConf, tableRef.getProjectId, tableRef.getDatasetId, tableRef.getTableId)
     val tableData = sqlContext.sparkContext.newAPIHadoopRDD(
@@ -126,9 +127,13 @@ import org.slf4j.LoggerFactory
       classOf[AvroBigQueryInputFormat],
       classOf[LongWritable],
       classOf[GenericData.Record]).map(x=>x._2)
-    val schemaString = tableData.map(_.getSchema.toString).first()
+    val schemaString = tableData.map( gd => gd.getSchema.toString).first()
+
+    Console.out.println(s" SCHEMA STRING = ${schemaString}")
     val schema = new Schema.Parser().parse(schemaString)
     val structType = SchemaConverters.avroToSqlType(schema).dataType.asInstanceOf[StructType]
+
+    Console.out.println(s"  SPARK SQL SCHEMA = ${structType.treeString}")
     val converter = SchemaConverters.createConverterToSQL(schema)
       .asInstanceOf[GenericData.Record => Row]
     sqlContext.createDataFrame(tableData.map(converter), structType)

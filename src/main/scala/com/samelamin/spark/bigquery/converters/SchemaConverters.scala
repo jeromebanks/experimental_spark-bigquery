@@ -92,11 +92,15 @@ object SchemaConverters {
   def getTypeName(dataType: String):DataType ={
     dataType match {
       case "INTEGER" => LongType
-      case "FLOAT" => FloatType
+      ///case "FLOAT" => FloatType
+      case "FLOAT" => DoubleType
       case "STRING" => StringType
       case "BYTES" => BinaryType
       case "BOOLEAN" => BooleanType
       case "TIMESTAMP" => TimestampType
+      ///case "DATE" => DateType
+      case "DATE" => StringType
+
     }
 
   }

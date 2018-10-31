@@ -16,7 +16,7 @@
  */
 
 name := "spark-bigquery"
-organization := "com.github.samelamin"
+organization := "com.demandbase"
 scalaVersion := {
   if (sparkVersion.value >= "2.0.0") {
     "2.11.11"
@@ -44,12 +44,19 @@ libraryDependencies ++= Seq(
   "com.databricks" %% "spark-avro" % "4.0.0",
   "com.google.guava" % "guava" % "24.0-jre",
   "com.holdenkarau" %% "spark-testing-base" % "2.3.1_0.10.0" % "test",
-  "com.google.cloud.bigdataoss" % "bigquery-connector" % "0.11.0-hadoop2"
+ "com.google.cloud.bigdataoss" % "bigquery-connector" % "0.11.0-hadoop2"
     exclude ("org.apache.avro", "avro-ipc"),
+  ///"com.google.cloud.bigdataoss" % "bigquery-connector" % "hadoop2-1.9.9-SNAPSHOT"
+    ///exclude ("org.apache.avro", "avro-ipc") from "file:///Users/jbanks/.m2/repository/com/google/cloud/bigdataoss/bigquery-connector/hadoop2-1.9.9-SNAPSHOT/bigquery-connector-hadoop2-1.9.9-SNAPSHOT-shaded.jar",
+  ///"com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop2-1.9.9-SNAPSHOT"
+       ///from "file:///Users/jbanks/.m2/repository/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.9-SNAPSHOT/gcs-connector-hadoop2-1.9.9-SNAPSHOT-shaded.jar",
   "joda-time" % "joda-time" % "2.9.3",
   "org.mockito" % "mockito-core" % "1.8.5" % "test",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 )
+
+resolvers += Resolver.mavenLocal
+
 
 assemblyShadeRules in assembly := Seq(
   ShadeRule.rename("com.google.common.**" -> "shade.com.google.@1").inAll
@@ -59,18 +66,26 @@ assemblyShadeRules in assembly := Seq(
 licenses += "Apache-2.0" -> url("http://opensource.org/licenses/Apache-2.0")
 releaseCrossBuild             := true
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
-pomExtra                      := {
-  <url>https://github.com/samelamin/spark-bigquery</url>
-  <scm>
-    <url>git@github.com/samelamin/spark-bigquery.git</url>
-    <connection>scm:git:git@github.com:samelamin/spark-bigquery.git</connection>
-  </scm>
-  <developers>
-    <developer>
-      <id>samelamin</id>
-      <name>Sam Elamin</name>
-      <email>hussam.elamin@gmail.com</email>
-      <url>https://github.com/samelamin</url>
-    </developer>
-  </developers>
-}
+
+////pomExtra                      := {
+////  <url>https://github.com/samelamin/spark-bigquery</url>
+////  <scm>
+////    <url>git@github.com/samelamin/spark-bigquery.git</url>
+////    <connection>scm:git:git@github.com:samelamin/spark-bigquery.git</connection>
+////  </scm>
+////  <developers>
+////    <developer>
+////      <id>samelamin</id>
+////      <name>Sam Elamin</name>
+////      <email>hussam.elamin@gmail.com</email>
+////      <url>https://github.com/samelamin</url>
+////    </developer>
+////  </developers>
+////}
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+
+publishTo := Some("Demandbase SBT Snapshot" at "https://artifactory.demandbase.com/artifactory/sbt-snapshot-local/")
+
+
+

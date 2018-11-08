@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.samelamin.spark.bigquery
+package com.demandbase.spark.bigquery
 
 import org.apache.spark.sql.{DataFrameWriter, Row}
 
@@ -22,7 +22,7 @@ class DataFrameWriterFunctions(@transient val dfw: DataFrameWriter[Row]) extends
   /**
     * The classpath to the default source (which in turn results in a BigQuery Source )
     */
-  private val source = "com.samelamin.spark.bigquery.DefaultSource"
+  private val source = "com.demandbase.spark.bigquery.DefaultSource"
 
   /**
     * Stores the current DataFrame in the only open bucket.

@@ -1,4 +1,4 @@
-package com.samelamin.spark.bigquery.utils
+package com.demandbase.spark.bigquery.utils
 
 import java.util.{Collections, Map => JavaMap}
 import collection.JavaConversions._

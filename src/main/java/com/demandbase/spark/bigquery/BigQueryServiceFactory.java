@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.samelamin.spark.bigquery;
+package com.demandbase.spark.bigquery;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
@@ -23,6 +23,8 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.bigquery.Bigquery;
 import com.google.api.services.bigquery.BigqueryScopes;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -64,6 +66,13 @@ public final class BigQueryServiceFactory {
         return service;
     }
 
+
+    static private String _jsonCreds = null;
+
+    public static void setJsonCredentials( String jsonCreds) {
+       _jsonCreds = jsonCreds;
+    }
+
     /**
      * Creates an authorized client to Google BigQuery.
      *
@@ -74,7 +83,16 @@ public final class BigQueryServiceFactory {
         // Create the credential
         HttpTransport transport = new NetHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
-        GoogleCredential credential = GoogleCredential.getApplicationDefault(transport, jsonFactory);
+        ///GoogleCredential credential = GoogleCredential.getApplicationDefault(transport, jsonFactory);
+        GoogleCredential credential = null;
+        if(_jsonCreds != null) {
+            System.out.println("BIG QUERY SERVICE FACTORY USING JSON CREDS");
+            ByteArrayInputStream jsonBuffer = new ByteArrayInputStream(_jsonCreds.getBytes());
+            credential = GoogleCredential.fromStream( jsonBuffer);
+            System.out.println(" BIG QUERY CREDENTIAL SERVICE ACCOUNTID = " + credential.getServiceAccountId() + " ACCOUNT USER  = " + credential.getServiceAccountUser());
+        } else {
+           credential =  GoogleCredential.getApplicationDefault(transport, jsonFactory);
+        }
 
         // Depending on the environment that provides the default credentials (e.g. Compute Engine, App
         // Engine), the credentials may require us to specify the scopes we need explicitly.

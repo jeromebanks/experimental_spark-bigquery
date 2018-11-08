@@ -1,12 +1,11 @@
-package com.samelamin.spark.bigquery
+package com.demandbase.spark.bigquery
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.sources._
 import org.apache.spark.sql.types._
 import org.apache.spark.rdd.RDD
 import com.google.cloud.hadoop.io.bigquery.BigQueryStrings
-import com.samelamin.spark.bigquery.converters.SchemaConverters
-import com.samelamin.spark.bigquery._
+import com.demandbase.spark.bigquery.converters.SchemaConverters
 
 class BigQueryRelation(tableReferenceSource: String)(@transient val sqlContext: SQLContext) extends BaseRelation with TableScan {
 

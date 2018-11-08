@@ -1,9 +1,9 @@
-package com.samelamin.spark.bigquery
+package com.demandbase.spark.bigquery
 
 import com.google.api.services.bigquery.model.{TableReference, TableSchema}
 import com.google.cloud.hadoop.io.bigquery._
 import com.google.gson._
-import com.samelamin.spark.bigquery.converters.{BigQueryAdapter, SchemaConverters}
+import com.demandbase.spark.bigquery.converters.{BigQueryAdapter, SchemaConverters}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, NullWritable}
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat

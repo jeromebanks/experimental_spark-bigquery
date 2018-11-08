@@ -1,10 +1,10 @@
-package com.samelamin.spark.bigquery
+package com.demandbase.spark.bigquery
 
 
 import java.math.BigInteger
 
 import com.google.cloud.hadoop.io.bigquery.{AvroBigQueryInputFormat, _}
-import com.samelamin.spark.bigquery.converters.SchemaConverters
+import com.demandbase.spark.bigquery.converters.SchemaConverters
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericData
 import org.apache.hadoop.io.LongWritable

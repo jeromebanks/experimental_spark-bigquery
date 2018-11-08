@@ -1,4 +1,4 @@
-package com.samelamin.spark.bigquery
+package com.demandbase.spark.bigquery
 
 import java.math.BigInteger
 import java.util.UUID
@@ -12,7 +12,7 @@ import com.google.api.services.bigquery.{Bigquery, BigqueryScopes}
 import com.google.cloud.hadoop.io.bigquery._
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.google.gson.JsonParser
-import com.samelamin.spark.bigquery.utils.{BigQueryPartitionUtils, EnvHacker}
+import com.demandbase.spark.bigquery.utils.{BigQueryPartitionUtils, EnvHacker}
 import org.apache.hadoop.util.Progressable
 import org.apache.spark.sql._
 import org.joda.time.Instant

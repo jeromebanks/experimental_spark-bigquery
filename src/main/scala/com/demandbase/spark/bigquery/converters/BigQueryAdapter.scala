@@ -1,4 +1,4 @@
-package com.samelamin.spark.bigquery.converters
+package com.demandbase.spark.bigquery.converters
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.catalyst.encoders.RowEncoder

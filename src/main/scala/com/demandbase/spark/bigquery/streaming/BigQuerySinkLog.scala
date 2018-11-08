@@ -1,4 +1,4 @@
-package com.samelamin.spark.bigquery.streaming
+package com.demandbase.spark.bigquery.streaming
 
 import org.apache.hadoop.fs.Path
 import org.apache.spark.sql.{SaveMode, SparkSession}

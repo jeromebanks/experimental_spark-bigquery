@@ -44,16 +44,22 @@ libraryDependencies ++= Seq(
   "com.databricks" %% "spark-avro" % "4.0.0",
   "com.google.guava" % "guava" % "24.0-jre",
   "com.holdenkarau" %% "spark-testing-base" % "2.3.1_0.10.0" % "test",
- "com.google.cloud.bigdataoss" % "bigquery-connector" % "0.11.0-hadoop2"
-    exclude ("org.apache.avro", "avro-ipc"),
-  ///"com.google.cloud.bigdataoss" % "bigquery-connector" % "hadoop2-1.9.9-SNAPSHOT"
-    ///exclude ("org.apache.avro", "avro-ipc") from "file:///Users/jbanks/.m2/repository/com/google/cloud/bigdataoss/bigquery-connector/hadoop2-1.9.9-SNAPSHOT/bigquery-connector-hadoop2-1.9.9-SNAPSHOT-shaded.jar",
-  ///"com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop2-1.9.9-SNAPSHOT"
-       ///from "file:///Users/jbanks/.m2/repository/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.9-SNAPSHOT/gcs-connector-hadoop2-1.9.9-SNAPSHOT-shaded.jar",
+ ///"com.google.cloud.bigdataoss" % "bigquery-connector" % "0.11.0-hadoop2"
+    ///exclude ("org.apache.avro", "avro-ipc"),
+ "com.google.cloud.bigdataoss" % "bigquery-connector" % "hadoop2-1.9.9-jdb-SNAPSHOT"
+    exclude ("org.apache.avro", "avro-ipc") excludeAll(
+       ExclusionRule(organization = "com.sun.jdmk"),
+       ExclusionRule(organization = "com.sun.jmx"),
+       ExclusionRule(organization = "javax.jms") ),
+  "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop2-1.9.9-jdb-SNAPSHOT" excludeAll(
+       ExclusionRule(organization = "com.sun.jdmk"),
+       ExclusionRule(organization = "com.sun.jmx"),
+       ExclusionRule(organization = "javax.jms") ),
   "joda-time" % "joda-time" % "2.9.3",
   "org.mockito" % "mockito-core" % "1.8.5" % "test",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
-)
+) 
+
 
 resolvers += Resolver.mavenLocal
 

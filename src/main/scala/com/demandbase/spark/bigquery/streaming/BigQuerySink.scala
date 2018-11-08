@@ -1,8 +1,8 @@
-package com.samelamin.spark.bigquery.streaming
+package com.demandbase.spark.bigquery.streaming
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.execution.streaming.Sink
-import com.samelamin.spark.bigquery._
+import com.demandbase.spark.bigquery._
 import org.slf4j.LoggerFactory
 import scala.util.Try
 import org.apache.hadoop.fs.Path

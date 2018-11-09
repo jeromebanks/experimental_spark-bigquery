@@ -20,7 +20,9 @@ class BigQueryDataFrame(self: DataFrame) extends Serializable {
 
   @transient
   lazy val hadoopConf = self.sparkSession.sparkContext.hadoopConfiguration
-  lazy val bq = BigQueryClient.getInstance(self.sqlContext)
+  lazy val bq = BigQueryClient.getInstance(self.sqlContext )
+    ///hadoopConf.get( "google.cloud.auth.service.account.json.keytext")
+  //)
 
   @transient
   lazy val jsonParser = new JsonParser()

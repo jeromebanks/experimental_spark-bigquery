@@ -73,9 +73,18 @@ import org.slf4j.LoggerFactory
     * Set GCP JSON key file.
     */
   def setGcpJsonKeyFile(jsonKeyFile: String): Unit = {
+    hadoopConf.set("google.cloud.auth.service.account.json.keyfile", jsonKeyFile)
     hadoopConf.set("mapred.bq.auth.service.account.json.keyfile", jsonKeyFile)
     hadoopConf.set("fs.gs.auth.service.account.json.keyfile", jsonKeyFile)
   }
+
+  def setGcpJsonKeyText(jsonKeyText: String): Unit = {
+    hadoopConf.set("google.cloud.auth.service.account.json.keytext", jsonKeyText)
+    hadoopConf.set("mapred.bq.auth.service.account.json.keytext", jsonKeyText)
+    hadoopConf.set("fs.gs.auth.service.account.json.keytext", jsonKeyText)
+  }
+
+  //// XXX Allow to set private key directly !!!!!
 
   /**
     * Set GCP pk12 key file.
@@ -86,7 +95,15 @@ import org.slf4j.LoggerFactory
     hadoopConf.set("fs.gs.auth.service.account.keyfile", pk12KeyFile)
   }
 
+  def bigQuerySelectAlternative( sqlQuery : String ) : DataFrame = {
+    val schema = ""
+    ???
+  }
+
   def bigQuerySelect(sqlQuery: String): DataFrame = {
+    /// XXX
+    /// Instead of Doing the query here ...
+    //// Create a view , and have it as part of the DataFrame process
     bq.selectQuery(sqlQuery)
     val tableData = sqlContext.sparkSession.sparkContext.newAPIHadoopRDD(
       hadoopConf,

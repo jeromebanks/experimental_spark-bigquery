@@ -1,8 +1,10 @@
 package com.demandbase.spark.bigquery
 
+import java.io.ByteArrayInputStream
 import java.math.BigInteger
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -34,7 +36,10 @@ object BigQueryClient {
     setGoogleBQEnvVariable(sqlContext)
     if (instance == null) {
       val bigquery = {
-        val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
+        ////val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
+
+        val gcpJson = sqlContext.sparkContext.hadoopConfiguration.get("google.cloud.auth.service.account.json.keytext")
+        val credential = getCredential(gcpJson)
         new Bigquery.Builder(new NetHttpTransport, new JacksonFactory, credential)
           .setApplicationName("spark-bigquery")
           .build()
@@ -44,10 +49,26 @@ object BigQueryClient {
     instance
   }
 
+
+  val BIGQUERY_OAUTH_SCOPES = Seq("https://www.googleapis.com/auth/bigquery")
+  //// XXX Use ShimSham to get the Google Credentials ....
+  def getCredential( gcpJson : String) : GoogleCredential = {
+    import collection.JavaConversions._
+
+    ///val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
+    val buffer = new ByteArrayInputStream( gcpJson.getBytes)
+    GoogleCredential.fromStream(  buffer).createScoped(BIGQUERY_OAUTH_SCOPES)
+  }
+
   private def setGoogleBQEnvVariable(sqlContext: SQLContext):Unit = {
     val bqKeyPath = sqlContext.sparkContext.hadoopConfiguration.get("fs.gs.auth.service.account.json.keyfile")
     if(bqKeyPath != null) {
       val myJavaMap = Map[String, String]("GOOGLE_APPLICATION_CREDENTIALS" -> bqKeyPath)
+      EnvHacker.setEnv(myJavaMap)
+    }
+    val bqKeyPath2 = sqlContext.sparkContext.hadoopConfiguration.get("google.cloud.auth.service.account.json.keyfile")
+    if(bqKeyPath2 != null) {
+      val myJavaMap = Map[String, String]("GOOGLE_APPLICATION_CREDENTIALS" -> bqKeyPath2)
       EnvHacker.setEnv(myJavaMap)
     }
   }

@@ -91,6 +91,8 @@ releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
+resolvers += "DemandBase" at "https://artifactory.demandbase.com/artifactory/sbt-snapshot-local/" 
+
 publishTo := Some("Demandbase SBT Snapshot" at "https://artifactory.demandbase.com/artifactory/sbt-snapshot-local/")
 
 

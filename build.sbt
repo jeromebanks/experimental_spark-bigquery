@@ -37,7 +37,6 @@ sparkComponents := Seq("core", "sql","streaming")
 spAppendScalaVersion := false
 spIncludeMaven := true
 spIgnoreProvided := true
-credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
 parallelExecution in Test := false
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-hive" % "2.3.1" % "test",
@@ -89,7 +88,6 @@ releasePublishArtifactsAction := PgpKeys.publishSigned.value
 ////  </developers>
 ////}
 
-////credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 resolvers += "DemandBase" at "https://artifactory.demandbase.com/artifactory/sbt-snapshot-local/" 
 

@@ -89,7 +89,7 @@ releasePublishArtifactsAction := PgpKeys.publishSigned.value
 ////  </developers>
 ////}
 
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+////credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 resolvers += "DemandBase" at "https://artifactory.demandbase.com/artifactory/sbt-snapshot-local/" 
 

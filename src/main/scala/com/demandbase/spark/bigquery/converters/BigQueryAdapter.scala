@@ -28,7 +28,12 @@ object BigQueryAdapter {
   }
 
   private def adaptField(structField: StructField, parentType: StructType): StructField = {
-    new StructField(adaptName(structField.name, parentType.fieldNames), adaptType(structField.dataType), structField.nullable)
+    if( structField.name.toLowerCase() == "as_of" && structField.dataType == StringType ) {
+      Console.out.println(s" Adapting AS_OF to DateType")
+      StructField("as_of", DateType)
+    } else {
+      new StructField(adaptName(structField.name, parentType.fieldNames), adaptType(structField.dataType), structField.nullable)
+    }
   }
 
   private def adaptType(dataType: DataType): DataType = {
@@ -43,16 +48,21 @@ object BigQueryAdapter {
     }
   }
 
+
   def apply(df: DataFrame): DataFrame = {
     val sqlContext = df.sparkSession.sqlContext
     val sparkContext = df.sparkSession.sparkContext
     val timestampColumn = sparkContext
       .hadoopConfiguration.get("timestamp_column","bq_load_timestamp")
+
     val newSchema = adaptType(df.schema).asInstanceOf[StructType]
+
     val encoder = RowEncoder.apply(newSchema).resolveAndBind()
     val encodedDF = df
       .queryExecution
       .toRdd.map(x=>encoder.fromRow(x))
+
+
    sqlContext.createDataFrame(encodedDF,newSchema).withColumn(timestampColumn,current_timestamp())
   }
 }

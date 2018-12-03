@@ -95,8 +95,21 @@ import org.slf4j.LoggerFactory
     hadoopConf.set("fs.gs.auth.service.account.keyfile", pk12KeyFile)
   }
 
+  /**
+    *  Instead of performing the query at analyze time
+    *   ( which bigQuerySelect does )
+    *   find the schema , and then do a mapPartitions
+    * @param sqlQuery
+    * @return
+    */
   def bigQuerySelectAlternative( sqlQuery : String ) : DataFrame = {
     val schema = ""
+
+    /**
+      * Pseudocode for this method
+      */
+
+
     ???
   }
 
@@ -115,7 +128,9 @@ import org.slf4j.LoggerFactory
     val structType = SchemaConverters.avroToSqlType(schema).dataType.asInstanceOf[StructType]
     val converter = SchemaConverters.createConverterToSQL(schema)
       .asInstanceOf[GenericData.Record => Row]
-    sqlContext.createDataFrame(tableData.map(converter), structType)
+    val result = sqlContext.createDataFrame(tableData.map(converter), structType)
+    hadoopConf.set(BigQueryConfiguration.TEMP_GCS_PATH_KEY, null)
+    result
   }
 
   def runDMLQuery(runDMLQuery:String):Unit = {

@@ -57,7 +57,9 @@ libraryDependencies ++= Seq(
   "joda-time" % "joda-time" % "2.9.3",
   "org.mockito" % "mockito-core" % "1.8.5" % "test",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
-) 
+).map(  _.excludeAll( ExclusionRule( organization = "org.codehaus.jackson" ) ) )
+ .map(  _.excludeAll( ExclusionRule( organization = "org.codehaus.jackson" ) ) )
+
 
 
 resolvers += Resolver.mavenLocal

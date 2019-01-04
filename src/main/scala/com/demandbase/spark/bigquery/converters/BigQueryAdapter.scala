@@ -52,8 +52,6 @@ object BigQueryAdapter {
   def apply(df: DataFrame): DataFrame = {
     val sqlContext = df.sparkSession.sqlContext
     val sparkContext = df.sparkSession.sparkContext
-    val timestampColumn = sparkContext
-      .hadoopConfiguration.get("timestamp_column","bq_load_timestamp")
 
     val newSchema = adaptType(df.schema).asInstanceOf[StructType]
 
@@ -63,6 +61,13 @@ object BigQueryAdapter {
       .toRdd.map(x=>encoder.fromRow(x))
 
 
-   sqlContext.createDataFrame(encodedDF,newSchema).withColumn(timestampColumn,current_timestamp())
+    val timestampColumn = sparkContext
+      .hadoopConfiguration.get("bq_timestamp_column")
+
+    if(timestampColumn != null) {
+      sqlContext.createDataFrame(encodedDF, newSchema).withColumn(timestampColumn, current_timestamp())
+    } else {
+      sqlContext.createDataFrame(encodedDF, newSchema)
+    }
   }
 }

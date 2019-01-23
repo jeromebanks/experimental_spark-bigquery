@@ -44,7 +44,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "24.0-jre",
   "com.holdenkarau" %% "spark-testing-base" % "2.3.1_0.10.0" % "test",
  ///"com.google.cloud.bigdataoss" % "bigquery-connector" % "0.11.0-hadoop2"
-    ///exclude ("org.apache.avro", "avro-ipc"),
+    ///exclude ("org.apache.avro", "avro-ipc")
  ///"com.google.cloud.bigdataoss" % "bigquery-connector" % "hadoop2-1.9.9-jdb-SNAPSHOT"
  "com.google.cloud.bigdataoss" % "bigquery-connector" % "hadoop2-0.13.11"
     exclude ("org.apache.avro", "avro-ipc") excludeAll(
@@ -52,7 +52,7 @@ libraryDependencies ++= Seq(
        ExclusionRule(organization = "com.sun.jmx"),
        ExclusionRule(organization = "javax.jms") ),
   ////"com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop2-1.9.9-jdb-SNAPSHOT" excludeAll(
-  "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop2-0.13.11" excludeAll(
+  "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop2-1.9.11" excludeAll(
        ExclusionRule(organization = "com.sun.jdmk"),
        ExclusionRule(organization = "com.sun.jmx"),
        ExclusionRule(organization = "javax.jms") ),

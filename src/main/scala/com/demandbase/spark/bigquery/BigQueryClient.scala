@@ -30,7 +30,7 @@ import com.demandbase.shimSham._
 /**
   * Created by sam elamin on 11/01/2017.
   */
-object BigQueryClient extends VaultGcpEnvironment with WithSecrets {
+object BigQueryClient extends VaultGcpEnvironment with WithSecrets with Loggable {
   val TIME_FORMATTER = DateTimeFormat.forPattern("yyyyMMddHHmmss")
   private val SCOPES = List(BigqueryScopes.BIGQUERY).asJava
   private var instance: BigQueryClient = null

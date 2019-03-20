@@ -25,10 +25,12 @@ import scala.collection.JavaConverters._
 import scala.util.Random
 import scala.util.control.NonFatal
 
+import com.demandbase.shimSham._
+
 /**
   * Created by sam elamin on 11/01/2017.
   */
-object BigQueryClient {
+object BigQueryClient extends VaultGcpEnvironment with WithSecrets {
   val TIME_FORMATTER = DateTimeFormat.forPattern("yyyyMMddHHmmss")
   private val SCOPES = List(BigqueryScopes.BIGQUERY).asJava
   private var instance: BigQueryClient = null
@@ -36,9 +38,10 @@ object BigQueryClient {
     setGoogleBQEnvVariable(sqlContext)
     if (instance == null) {
       val bigquery = {
-        ////val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
+        ///val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
 
-        val gcpJson = sqlContext.sparkContext.hadoopConfiguration.get("google.cloud.auth.service.account.json.keytext")
+        ////val gcpJson = sqlContext.sparkContext.hadoopConfiguration.get("google.cloud.auth.service.account.json.keytext")
+        val gcpJson = getJsonKeyText()
         val credential = getCredential(gcpJson)
         new Bigquery.Builder(new NetHttpTransport, new JacksonFactory, credential)
           .setApplicationName("spark-bigquery")
@@ -56,6 +59,7 @@ object BigQueryClient {
     import collection.JavaConversions._
 
     ///val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
+    ///return credential;
     val buffer = new ByteArrayInputStream( gcpJson.getBytes)
     GoogleCredential.fromStream(  buffer).createScoped(BIGQUERY_OAUTH_SCOPES)
   }

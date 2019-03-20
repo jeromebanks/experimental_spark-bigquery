@@ -74,6 +74,15 @@ object SchemaConverters {
         }
       case mapType: MapType =>
         throw new IllegalArgumentException(s"Unsupported type: ${dataType}")
+        //// Is this a GCP limitation ?
+        /**
+        if(mapType.keyType == StringType
+         && mapType.valueType == FloatType ) {
+          typeToJson( field)
+        } else {
+          throw new IllegalArgumentException(s"Unsupported type: ${dataType}")
+        }
+          **/
       case other =>
         ("type" -> getTypeName(dataType))
     }

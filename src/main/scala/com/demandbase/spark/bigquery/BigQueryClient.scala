@@ -5,16 +5,18 @@ import java.math.BigInteger
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+import com.demandbase.shimSham.{Loggable, VaultGcpEnvironment, WithSecrets}
+import com.demandbase.spark.bigquery.utils.{BigQueryPartitionUtils, EnvHacker}
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.bigquery.model.{Dataset => BQDataset, _}
+import com.google.api.services.bigquery.model.{Dataset => BQDataset}
+import com.google.api.services.bigquery.model._
 import com.google.api.services.bigquery.{Bigquery, BigqueryScopes}
-import com.google.cloud.hadoop.io.bigquery._
+import com.google.cloud.hadoop.io.bigquery.{BigQueryConfiguration, BigQueryStrings, BigQueryUtils}
 import com.google.common.cache.{CacheBuilder, CacheLoader, LoadingCache}
 import com.google.gson.JsonParser
-import com.demandbase.spark.bigquery.utils.{BigQueryPartitionUtils, EnvHacker}
 import org.apache.hadoop.util.Progressable
 import org.apache.spark.sql._
 import org.joda.time.Instant
@@ -22,10 +24,9 @@ import org.joda.time.format.DateTimeFormat
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
+import scala.collection.JavaConversions._
 import scala.util.Random
 import scala.util.control.NonFatal
-
-import com.demandbase.shimSham._
 
 /**
   * Created by sam elamin on 11/01/2017.
@@ -56,7 +57,6 @@ object BigQueryClient extends VaultGcpEnvironment with WithSecrets with Loggable
   val BIGQUERY_OAUTH_SCOPES = Seq("https://www.googleapis.com/auth/bigquery")
   //// XXX Use ShimSham to get the Google Credentials ....
   def getCredential( gcpJson : String) : GoogleCredential = {
-    import collection.JavaConversions._
 
     ///val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
     ///return credential;
@@ -215,9 +215,10 @@ class BigQueryClient(sqlContext: SQLContext, var bigquery: Bigquery = null) exte
       .setTableId(tableId)
   }
 
+
   private def createQueryJob(sqlQuery: String,
                              destinationTable: TableReference,
-                             dryRun: Boolean,useStandardSQL: Boolean = false): Job = {
+                             dryRun: Boolean,useStandardSQL: Boolean = true): Job = {
     var queryConfig = new JobConfigurationQuery()
       .setQuery(sqlQuery)
       .setPriority(PRIORITY)
@@ -231,11 +232,22 @@ class BigQueryClient(sqlContext: SQLContext, var bigquery: Bigquery = null) exte
         .setWriteDisposition("WRITE_EMPTY")
         .setDestinationTable(destinationTable)
         .setAllowLargeResults(true)
+    } else {
+      logger.info( s" No destination set")
+      ///queryConfig = queryConfig
+          ///.setWriteDisposition("WRITE_APPEND")
+          //.setAllowLargeResults(false)
+          ///.setQueryParameters( List())
+          ///.setSchemaUpdateOptions( List( "ALLOW_FIELD_ADDITION", "ALLOW_FIELD_RELAXATION"))
     }
 
     val jobConfig = new JobConfiguration().setQuery(queryConfig).setDryRun(dryRun)
+                        .setJobType("QUERY")
+
+
     val jobReference = createJobReference(projectId, JOB_ID_PREFIX)
     val job = new Job().setConfiguration(jobConfig).setJobReference(jobReference)
+
     bigquery.jobs().insert(projectId, job).execute()
   }
 

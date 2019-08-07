@@ -51,8 +51,28 @@ class BigQueryDataFrame(self: DataFrame) extends Serializable {
       timePartitionExpiration,
       writeDisposition,
       createDisposition)
-    delete(new Path(gcsPath))
+    if( !mirroredPath.isDefined) {
+       delete(new Path(gcsPath))
+    }
   }
+
+  /**
+  def loadBigQueryTable(gcsPath: String,
+                          isPartitionedByDay: Boolean = false,
+                          timePartitionExpiration: Long = 0,
+                          writeDisposition: WriteDisposition.Value = null,
+                          createDisposition: CreateDisposition.Value = null,
+                          mirroredPath : Option[String]= None): Unit = {
+    bq.load(destinationTable,
+      bigQuerySchema,
+      gcsPath,
+      isPartitionedByDay,
+      timePartitionExpiration,
+      writeDisposition,
+      createDisposition)
+
+  }
+  **/
 
 
 
@@ -70,7 +90,7 @@ class BigQueryDataFrame(self: DataFrame) extends Serializable {
     val s3Prefix = s"s3a://${s3Bucket}"
     val s3Path = mirroredPath match {
       case Some(path) => {
-       s"${s3Prefix}/${mirroredPath}"
+       s"${s3Prefix}/${path}"
       }
       case None => {
         val temp = s"spark-bigquery-${System.currentTimeMillis()}=${Random.nextInt(Int.MaxValue)}"
@@ -79,7 +99,10 @@ class BigQueryDataFrame(self: DataFrame) extends Serializable {
       }
     }
 
-
+    /// XXX Now just delete if this staging error already exists...
+    /// TODO ... Just make sure Hive Metastores are replicated,
+    ////  and that tables get loaded after being transferred
+    delete( new Path(s3Path) )
 
     /// Write to S3, and then transfer to GCS
     ///val gcsPath = s"gs://$bucket/hadoop/tmp/spark-bigquery/$temp"
@@ -101,6 +124,9 @@ class BigQueryDataFrame(self: DataFrame) extends Serializable {
 
     logger.info(s" Transfering to bucket GCP ${gcpBucket}")
     TransferToGcs.transferToGcs( new java.net.URI(s3Path), gcpBucket )
+
+
+    //// Delete
 
     val gcsPath =  s"gs://${gcpBucket}" + s3Path.substring(s3Prefix.length )
     logger.info(s" Dest GCS Path is ${gcsPath}")
@@ -124,6 +150,8 @@ class BigQueryDataFrame(self: DataFrame) extends Serializable {
 
   private def delete(path: Path): Unit = {
     val fs = FileSystem.get(path.toUri, hadoopConf)
-    fs.delete(path, true)
+    if(fs.exists( path)) {
+      fs.delete(path, true)
+    }
   }
 }

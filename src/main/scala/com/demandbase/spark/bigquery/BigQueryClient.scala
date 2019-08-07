@@ -121,7 +121,7 @@ class BigQueryClient(sqlContext: SQLContext, var bigquery: Bigquery = null) exte
     var loadConfig = new JobConfigurationLoad()
       .setSchema(bigQuerySchema)
       .setDestinationTable(destinationTable)
-      .setSourceFormat("NEWLINE_DELIMITED_JSON")
+      .setSourceFormat("NEWLINE_DELIMITED_JSON")  /// XXX Allow Parquet import
       .setSourceUris(List(gcsPath + "/*").asJava)
 
     if(allow_schema_updates) {

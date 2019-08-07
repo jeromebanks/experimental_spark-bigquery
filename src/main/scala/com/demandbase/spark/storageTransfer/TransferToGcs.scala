@@ -40,40 +40,38 @@ object TransferToGcs extends VaultGcpEnvironment with VaultSwitch with IamVaultR
   }
 
 
-  @tailrec
+  ///@tailrec
   def waitForJob( jobName : String) : Unit = {
-       val pollJobs = storageTransfer
+    /// XXX Doesn't seem like the correct thing ... Adding a thread sleep
+    log(s" Sleeping before checking for jobs ${jobName} ")
+    Thread.sleep( 15*1000)
+    val filter =  s""" {"project_id": "${getProjectId()}", "job_names": [ "${jobName}" ] } """
+    log( s" Checking for any Jobs with name ${jobName} and filter ${filter}")
+     val pollJobs = storageTransfer
           .transferOperations()
           .list("transferOperations")
-          .setFilter( s""" {"project_id": "${getProjectId()}", "job_names": [ "${jobName}" ] } """
-        ).execute()
+          .setFilter(filter).execute()
 
-    log( s" POLL JOBS ARE ${pollJobs.toPrettyString}")
+    if( pollJobs.getOperations().size() > 0) {
+      pollJobs.getOperations.foreach(  job => {
+        log(s" Job is ${job.toPrettyString}")
 
-    val operations = pollJobs.getOperations()
-    if( operations != null) {
-      operations.foreach(job => {
-        log(s" Got Status for Job ${job.toPrettyString}")
+        if (job.getMetadata().get("status") == "FAILED") {
+            throw new IllegalStateException(job.getError.toPrettyString)
+        } else if( job.getMetadata().get("status") == "SUCCESS") {
+            log(s" FINISHED JOB ${job.getMetadata}")
+             return
+        }
       })
 
-      val errors = operations.filter( _.getMetadata.get("status") == "FAILED" )
-      if( errors != null &&  !errors.isEmpty) {
-        val errorMessage =
-          errors.map(job => { s" Failed Job ${job.getError}" }).mkString(";")
-        throw new IllegalStateException(
-          s" Error in Transfer Job ${jobName} ${errorMessage}"
-        )
-      }
+      log(s" TRYING AGAIN ")
+      waitForJob(jobName)
+    } else{
 
-      if (operations.forall(job => job.getDone)) {
-
-        log(s" All Jobs completed; Finishing")
-
-      } else {
-        Thread.sleep(30 * 1000)
-        waitForJob(jobName)
-      }
+      log(s" NO OPERATIONS FOUND")
+      waitForJob(jobName)
     }
+
   }
 
 

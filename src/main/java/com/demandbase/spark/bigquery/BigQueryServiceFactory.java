@@ -86,10 +86,8 @@ public final class BigQueryServiceFactory {
         ///GoogleCredential credential = GoogleCredential.getApplicationDefault(transport, jsonFactory);
         GoogleCredential credential = null;
         if(_jsonCreds != null) {
-            System.out.println("BIG QUERY SERVICE FACTORY USING JSON CREDS");
             ByteArrayInputStream jsonBuffer = new ByteArrayInputStream(_jsonCreds.getBytes());
             credential = GoogleCredential.fromStream( jsonBuffer);
-            System.out.println(" BIG QUERY CREDENTIAL SERVICE ACCOUNTID = " + credential.getServiceAccountId() + " ACCOUNT USER  = " + credential.getServiceAccountUser());
         } else {
            credential =  GoogleCredential.getApplicationDefault(transport, jsonFactory);
         }

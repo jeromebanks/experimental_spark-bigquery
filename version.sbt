@@ -1,4 +1,4 @@
-version in ThisBuild := "0.2.11-DB"
+version in ThisBuild := "0.2.12-JDB-SNAPSHOT"
 
 
 /// Local publishing

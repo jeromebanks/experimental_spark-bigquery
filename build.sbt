@@ -54,7 +54,7 @@ libraryDependencies ++= Seq(
        ExclusionRule(organization = "javax.jms") ),
   "com.google.apis" % "google-api-services-storagetransfer" % "v1-rev117-1.25.0",
   "joda-time" % "joda-time" % "2.9.3",
-  "com.demandbase" %% "shimsham" % "0.2.10",
+  "com.demandbase" %% "shimsham" % "0.2.12-SNAPSHOT",
   "org.mockito" % "mockito-core" % "1.8.5" % "test",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test"
 ).map(  _.excludeAll( ExclusionRule( organization = "org.codehaus.jackson" ) ) )

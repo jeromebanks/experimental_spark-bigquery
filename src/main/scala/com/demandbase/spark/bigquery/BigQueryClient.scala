@@ -5,7 +5,7 @@ import java.math.BigInteger
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import com.demandbase.shimSham.{Loggable, VaultGcpEnvironment, WithSecrets}
+import com.demandbase.shimSham._
 import com.demandbase.spark.bigquery.utils.{BigQueryPartitionUtils, EnvHacker}
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
@@ -31,7 +31,7 @@ import scala.util.control.NonFatal
 /**
   * Created by sam elamin on 11/01/2017.
   */
-object BigQueryClient extends VaultGcpEnvironment with WithSecrets with Loggable {
+object BigQueryClient extends GoogleCredsProvided with Loggable {
   val TIME_FORMATTER = DateTimeFormat.forPattern("yyyyMMddHHmmss")
   private val SCOPES = List(BigqueryScopes.BIGQUERY).asJava
   private var instance: BigQueryClient = null
@@ -42,8 +42,9 @@ object BigQueryClient extends VaultGcpEnvironment with WithSecrets with Loggable
         ///val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
 
         ////val gcpJson = sqlContext.sparkContext.hadoopConfiguration.get("google.cloud.auth.service.account.json.keytext")
-        val gcpJson = getJsonKeyText()
-        val credential = getCredential(gcpJson)
+        ///val gcpJson = getJsonKeyText()
+        ///val credential = getCredential(gcpJson)
+        val credential = googleCreds().createScoped( SCOPES)
         new Bigquery.Builder(new NetHttpTransport, new JacksonFactory, credential)
           .setApplicationName("spark-bigquery")
           .build()
@@ -56,13 +57,13 @@ object BigQueryClient extends VaultGcpEnvironment with WithSecrets with Loggable
 
   val BIGQUERY_OAUTH_SCOPES = Seq("https://www.googleapis.com/auth/bigquery")
   //// XXX Use ShimSham to get the Google Credentials ....
-  def getCredential( gcpJson : String) : GoogleCredential = {
+  ///def getCredential( gcpJson : String) : GoogleCredential = {
 
     ///val credential = GoogleCredential.getApplicationDefault.createScoped(SCOPES)
     ///return credential;
-    val buffer = new ByteArrayInputStream( gcpJson.getBytes)
-    GoogleCredential.fromStream(  buffer).createScoped(BIGQUERY_OAUTH_SCOPES)
-  }
+    ///val buffer = new ByteArrayInputStream( gcpJson.getBytes)
+    ///GoogleCredential.fromStream(  buffer).createScoped(BIGQUERY_OAUTH_SCOPES)
+  ////}
 
   private def setGoogleBQEnvVariable(sqlContext: SQLContext):Unit = {
     val bqKeyPath = sqlContext.sparkContext.hadoopConfiguration.get("fs.gs.auth.service.account.json.keyfile")

@@ -9,23 +9,13 @@ import com.demandbase.shimSham._
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.http.HttpRequest
 import com.google.cloud.storage.storagetransfer.samples.RetryHttpInitializerWrapper
-import com.demandbase.core.common.utils.aws.IamVaultReader
 
 import scala.collection.JavaConversions._
 import org.joda.time.{DateTime => JodaDateTime}
 
 import scala.annotation.tailrec
 
-object TransferToGcs extends VaultGcpEnvironment with VaultSwitch with IamVaultReader with Configurable  with Loggable {
-  override def vault_address: String = getProperty("vault.address", "https://vault.demandbase.com:8200/")
-  ///override def vault_namespace: String = getProperty("vault.namespace", s"secret/environments/development/dummy_app")
-  override def vault_namespace= vaultPath
-
-  override def iam_server_id: String = getProperty("spark.vault.iam_server_id", "vault.demandbase.com")
-  override def vault_role_name: String = getProperty("spark.vault.role_name", "qubole-service-dev")
-  override def iam_role_name: String = getProperty("spark.vault.iam_role_name", "qubole-service-dev")
-  override def sts_region: String = getProperty("spark.vault.sts_region", "us-east-1")
-
+object TransferToGcs extends VaultGcpEnvironment with VaultSecretsProvided with Configurable  with Loggable {
 
   def transferToGcs( sourceURL : java.net.URI, gcpBucket : String) = {
 
@@ -88,7 +78,7 @@ object TransferToGcs extends VaultGcpEnvironment with VaultSwitch with IamVaultR
     val httpTransport = Utils.getDefaultTransport
     val jsonFactory = Utils.getDefaultJsonFactory
 
-    val unscopedCreds = GcpCredentialsFactory.gcpCredentials
+    val unscopedCreds = googleCreds()
     val creds : GoogleCredential = if (unscopedCreds.createScopedRequired()) {
        unscopedCreds.createScoped(StoragetransferScopes.all());
     } else {
